@@ -1,0 +1,11 @@
+include 'javabite:common'
+include 'javabite:javabite-backend'
+include 'javabite:javabite-common'
+include 'javabite:javabite-code-gen'
+include 'javabite:javabite-compiler'
+include 'javabite:javabite-lexer'
+include 'javabite:javabite-parser'
+include 'javabite:javabite-semantic'
+include 'crosstest'
+include 'fuc'
+

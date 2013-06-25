@@ -1,0 +1,6 @@
+[submodule "fuc"]
+	path = fuc
+	url = https://github.com/swp-uebersetzerbau-ss13/fuc.git
+[submodule "javabite"]
+	path = javabite
+	url = https://github.com/swp-uebersetzerbau-ss13/javabite.git

@@ -1,11 +1,20 @@
-include 'javabite:common'
-include 'javabite:javabite-backend'
-include 'javabite:javabite-common'
-include 'javabite:javabite-code-gen'
-include 'javabite:javabite-compiler'
-include 'javabite:javabite-lexer'
-include 'javabite:javabite-parser'
-include 'javabite:javabite-semantic'
+include 'common'
+project(':common').projectDir = new File(settingsDir, './javabite/common')
+include 'javabite'
+include 'javabite-backend'
+project(':javabite-backend').projectDir = new File(settingsDir, './javabite/javabite-backend')
+include 'javabite-common'
+project(':javabite-common').projectDir = new File(settingsDir, './javabite/javabite-common')
+include 'javabite-code-gen'
+project(':javabite-code-gen').projectDir = new File(settingsDir, './javabite/javabite-code-gen')
+include 'javabite-compiler'
+project(':javabite-compiler').projectDir = new File(settingsDir, './javabite/javabite-compiler')
+include 'javabite-lexer'
+project(':javabite-lexer').projectDir = new File(settingsDir, './javabite/javabite-lexer')
+include 'javabite-parser'
+project(':javabite-parser').projectDir = new File(settingsDir, './javabite/javabite-parser')
+include 'javabite-semantic'
+project(':javabite-semantic').projectDir = new File(settingsDir, './javabite/javabite-semantic')
 include 'crosstest'
 include 'fuc'
 

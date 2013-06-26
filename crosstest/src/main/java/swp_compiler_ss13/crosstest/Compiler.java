@@ -18,9 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 public class Compiler {
 
 

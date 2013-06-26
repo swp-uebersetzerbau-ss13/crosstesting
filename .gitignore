@@ -1,1 +1,19 @@
 dist/
+# Gradle
+doc
+bin
+build
+.gradle
+
+# Eclipse
+.classpath
+.project
+.settings
+
+# Java
+*.class
+
+# Project-Specific
+javabite.properties
+*.log
+fuc

@@ -4,3 +4,6 @@
 [submodule "javabite"]
 	path = javabite
 	url = https://github.com/swp-uebersetzerbau-ss13/javabite.git
+[submodule "common"]
+	path = common
+	url = https://github.com/swp-uebersetzerbau-ss13/common.git

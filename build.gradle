@@ -33,6 +33,13 @@ project(':common'){
 project(':fuc') {
 	ant.importBuild 'code/build.xml'
 }
+task jbJars(dependsOn: ':buildAll')
+task fucJars(dependsOn: ':fuc:dist')
+task test(dependsOn: ':crosstest:test')
+test.mustRunAfter jbJars
+test.mustRunAfter fucJars
+task buildAndTest(dependsOn: ['jbJars','fucJars','test'])
+
 def fucJarFiles() {
 	files('./fuc/code/dist/FUC-SymbolTable.jar','./fuc/code/dist/FUC-AST.jar',
 		'./fuc/code/dist/FUC-Lexer.jar','./fuc/code/dist/FUC-Parser.jar',

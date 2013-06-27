@@ -1,6 +1,6 @@
 apply plugin: 'eclipse'
-apply from: 'javabite/build.gradle'
 
+ant.importBuild 'javabite/build.xml'
 defaultTasks ':crosstest:test'
 project(':crosstest') {
 	apply plugin: 'java'
@@ -14,22 +14,24 @@ project(':crosstest') {
 		testCompile 'junit-addons:junit-addons:1.4'
 		testCompile 'com.e-movimento.tinytools:privilegedaccessor:1.2.1'
 		testCompile 'org.hamcrest:hamcrest-core:1.3'
-		compile project(':javabite-compiler')
 		compile project(':common')
 		compile fucJarFiles()
+		compile javabiteJarFiles()
+	}
+}
+project(':common'){
+	apply plugin: 'java'
+	sourceSets {
+		main {
+			java { srcDir 'interfaces/src' }
+		}
+		test {
+			java { srcDir 'interfaces/test' }
+		}
 	}
 }
 project(':fuc') {
 	ant.importBuild 'code/build.xml'
-}
-buildscript {
-	repositories {
-		mavenCentral()
-	}
-
-	dependencies {
-		classpath 'eu.appsatori:gradle-fatjar-plugin:0.2-rc1'
-	}
 }
 def fucJarFiles() {
 	files('./fuc/code/dist/FUC-SymbolTable.jar','./fuc/code/dist/FUC-AST.jar',
@@ -37,4 +39,9 @@ def fucJarFiles() {
 		'./fuc/code/dist/FUC-Semantic-Analyser.jar','./fuc/code/dist/FUC-IRGen.jar',
 		'./fuc/code/dist/FUC-Backend.jar','./fuc/code/dist/lib/log4j-1.2.17.jar',
 		'./fuc/code/dist/FUC-Backend.jar')
+}
+def javabiteJarFiles() {
+	files('./javabite/bin/javabite-semantic-0.1.jar','./javabite/bin/javabite-common-0.1.jar',
+		'./javabite/bin/javabite-parser-0.1.jar','./javabite/bin/javabite-backend-0.1.jar',
+		'./javabite/bin/javabite-lexer-0.1.jar','./javabite/bin/javabite-code-gen-0.1.jar',)
 }

@@ -69,4 +69,10 @@ public class ReportLogImpl implements ReportLog {
 	public List<ReportType> getWarnings() {
 		return warningList;
 	}
+
+	public List<ReportType> getEntries(){
+		List<ReportType> reportTypes = new ArrayList<>(warningList);
+		reportTypes.addAll(errorList);
+		return reportTypes;
+	}
 }

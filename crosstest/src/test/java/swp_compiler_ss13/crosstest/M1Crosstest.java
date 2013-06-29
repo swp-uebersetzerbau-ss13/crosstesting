@@ -87,26 +87,26 @@ public class M1Crosstest extends AbstractCrosstest {
 
 	@Test
 	public void testDoubleDeclaration() throws Exception {
-		testProgHasError(ExampleProgs.doubleDeclaration());
+		testProgCompilation(ExampleProgs.doubleDeclaration());
 	}
 
 	@Test
 	public void testInvalidIds() throws Exception {
-		testProgHasError(ExampleProgs.invalidIds());
+		testProgCompilation(ExampleProgs.invalidIds());
 	}
 
 	@Test
 	public void testMultipleMinusENotation() throws Exception {
-		testProgHasError(ExampleProgs.multipleMinusENotation());
+		testProgCompilation(ExampleProgs.multipleMinusENotation());
 	}
 
 	@Test
 	public void testMultiplePlusesInExp() throws Exception {
-		testProgHasError(ExampleProgs.multiplePlusesInExp());
+		testProgCompilation(ExampleProgs.multiplePlusesInExp());
 	}
 
 	@Test
 	public void testUndefReturn() throws Exception {
-		testProgHasWarnings(ExampleProgs.undefReturnProg());
+		testProgCompilation(ExampleProgs.undefReturnProg());
 	}
 }

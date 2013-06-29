@@ -37,34 +37,52 @@ public class Compiler {
 		errlog = new ReportLogImpl();
 	}
 
-
-
-	protected ReportLogImpl compileForError(String prog) throws BackendException,
-			IntermediateCodeGeneratorException, IOException, InterruptedException {
-		lexer.setSourceStream(new ByteArrayInputStream(prog.getBytes("UTF-8")));
-		parser.setLexer(lexer);
-		parser.setReportLog(errlog);
-		AST ast = parser.getParsedAST();
-		if (errlog.hasErrors()){
-			return errlog;
-		}
-		analyser.setReportLog(errlog);
-		analyser.analyse(ast);
-		return errlog;
-	}
-
 	protected InputStream compile(String prog) throws BackendException,
 			IntermediateCodeGeneratorException, IOException, InterruptedException {
+		errlog = new ReportLogImpl();
 		lexer.setSourceStream(new ByteArrayInputStream(prog.getBytes("UTF-8")));
 		parser.setLexer(lexer);
 		parser.setReportLog(errlog);
 		AST ast = parser.getParsedAST();
+		if (errlog.hasErrors()) return null;
 		analyser.setReportLog(errlog);
 		AST ast2 = analyser.analyse(ast);
+		if (errlog.hasErrors()) return null;
 		List<Quadruple> tac = irgen.generateIntermediateCode(ast2);
 		Map<String, InputStream> targets = backend.generateTargetCode("prog", tac);
 		return targets.get(targets.keySet().iterator().next());
 	}
+
+	public ReportLogImpl getErrlog() {
+		return errlog;
+	}
+
+//	protected ReportLogImpl compileForError(String prog) throws BackendException,
+//			IntermediateCodeGeneratorException, IOException, InterruptedException {
+//		lexer.setSourceStream(new ByteArrayInputStream(prog.getBytes("UTF-8")));
+//		parser.setLexer(lexer);
+//		parser.setReportLog(errlog);
+//		AST ast = parser.getParsedAST();
+//		if (errlog.hasErrors()){
+//			return errlog;
+//		}
+//		analyser.setReportLog(errlog);
+//		analyser.analyse(ast);
+//		return errlog;
+//	}
+//
+//	protected InputStream compile(String prog) throws BackendException,
+//			IntermediateCodeGeneratorException, IOException, InterruptedException {
+//		lexer.setSourceStream(new ByteArrayInputStream(prog.getBytes("UTF-8")));
+//		parser.setLexer(lexer);
+//		parser.setReportLog(errlog);
+//		AST ast = parser.getParsedAST();
+//		analyser.setReportLog(errlog);
+//		AST ast2 = analyser.analyse(ast);
+//		List<Quadruple> tac = irgen.generateIntermediateCode(ast2);
+//		Map<String, InputStream> targets = backend.generateTargetCode("prog", tac);
+//		return targets.get(targets.keySet().iterator().next());
+//	}
 
 	private Object getModule(Class moduleClass, Class implClass){
 		ServiceLoader serviceLoader = ServiceLoader.load(moduleClass);

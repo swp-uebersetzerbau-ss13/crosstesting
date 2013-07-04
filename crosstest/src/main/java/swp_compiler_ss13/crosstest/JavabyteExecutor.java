@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.StringWriter;
 
 import org.apache.commons.io.IOUtils;
-import swp_compiler_ss13.javabite.runtime.JavaClassProcessRuntimeException;
 
 public class JavabyteExecutor {
 	private final static boolean NO_VERIFY_NEEDED = false;
@@ -19,16 +18,16 @@ public class JavabyteExecutor {
 			throw new NullPointerException();
 
 		if (!classFile.exists())
-			throw new JavaClassProcessRuntimeException(
-					"JavaClassProcess can not be started. File does not exists.");
+			throw new JavabyteExecutorRuntimeException(
+					"JavabyteExecutor can not be started. File does not exists.");
 
 		if (classFile.isDirectory())
-			throw new JavaClassProcessRuntimeException(
-					"JavaClassProcess can not be started. Need a file not a directory.");
+			throw new JavabyteExecutorRuntimeException(
+					"JavabyteExecutor can not be started. Need a file not a directory.");
 
 		if (!classFile.getName().endsWith(".class"))
-			throw new JavaClassProcessRuntimeException(
-					"JavaClassProcess can not be started. File has not expected extension.");
+			throw new JavabyteExecutorRuntimeException(
+					"JavabyteExecutor can not be started. File has not expected extension.");
 
 		String classPath = classFile.getParent();
 		String className = classFile.getName();
@@ -48,7 +47,7 @@ public class JavabyteExecutor {
 			p = processBuilder.redirectErrorStream(true).start();
 			p.waitFor();
 		} catch (IOException | InterruptedException e) {
-			throw new JavaClassProcessRuntimeException(e.getMessage(), e);
+			throw new JavabyteExecutorRuntimeException(e.getMessage(), e);
 		}
 	}
 

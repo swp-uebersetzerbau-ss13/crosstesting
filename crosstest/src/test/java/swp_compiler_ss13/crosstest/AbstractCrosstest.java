@@ -2,6 +2,7 @@ package swp_compiler_ss13.crosstest;
 
 import junit.extensions.PA;
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.junit.*;
 import org.junit.Test;
@@ -64,32 +65,42 @@ public abstract class AbstractCrosstest {
 
 
 	@Test
-	public void test() throws InterruptedException, IOException, IntermediateCodeGeneratorException, BackendException {
+	public void test() throws InterruptedException, IOException, IntermediateCodeGeneratorException, BackendException, CloneNotSupportedException {
+
+		Logger.getRootLogger().setLevel(Level.ERROR);
 
 		this.progName = getProgName();
 
 		Map<String, InputStream> compilationResult = compiler.compile(getProg());
 		ReportLogImpl log = compiler.getErrlog();
 
-		String msg = "Expected ReportLog entries: " + getExpectedReportTypes()
-				+ ". Actual: " + log.getEntries().toString();
 
-		/* test for expected report log entries (errors and warnings) if program does not compile */
-		if (log.hasErrors()){
-			assertArrayEquals(msg, getExpectedReportTypes(), log.getErrors().toArray());
+		/* test for expected report log entries from parser if program does not compile */
+		if (compiler.errlogAfterParser.hasErrors()){
+			String msg = "Error in Parser: Expected ReportLog entries: " + Arrays.deepToString(getExpectedReportTypes())
+					+ ". Actual: " + log.getEntries().toString();
+			assertArrayEquals(msg, getExpectedReportTypes(), compiler.getErrlogAfterParser().getEntries().toArray());
+			return;
+		}
+
+		/* test for expected report log entries from analyzer if program does not compile */
+		if (compiler.errlogAfterAnalyzer.hasErrors()){
+			String msg = "Error in Analyzer: Expected ReportLog entries: " + Arrays.deepToString(getExpectedReportTypes())
+					+ ". Actual: " + log.getEntries().toString();
+			assertArrayEquals(msg, getExpectedReportTypes(), compiler.getErrlogAfterAnalyzer().getEntries().toArray());
 			return;
 		}
 
 		/* test for expected report log entries (i.e. warnings), if program compiles */
+		String msg = "Unexpected warnings after successfull compilation.\n Expected ReportLog entries: " + Arrays.deepToString(getExpectedReportTypes())
+				+ ". Actual: " + log.getEntries().toString();
 		assertArrayEquals(msg, getExpectedReportTypes(), log.getErrors().toArray());
-
-		/* assert that something was compiled*/
-		assertTrue(compilationResult != null);
 
 		LLVMIRExecutor.ExecutionResult executionResult = executeTargetCode(compilationResult);
 		assertEquals("Exit code doesn't match: ", getExpectedExitCode(), executionResult.exitCode);
 		assertEquals("Output doesn't macht: ", getExpectedOutput(), executionResult.output);
 	}
+
 
 	protected abstract String getProgName();
 
@@ -163,7 +174,14 @@ public abstract class AbstractCrosstest {
 		}
 
 		JavabyteExecutor jbExecutor = new JavabyteExecutor(mainClassFile);
-		return new LLVMIRExecutor.ExecutionResult(jbExecutor.getProcessOutput(), jbExecutor.getReturnValue(), null);
+
+		String output;
+		if (getExpectedOutput().equals(""))
+			output = "";
+		else
+			output = jbExecutor.getProcessOutput() + "\n";
+
+		return new LLVMIRExecutor.ExecutionResult(output, jbExecutor.getReturnValue(), null);
 	}
 
 

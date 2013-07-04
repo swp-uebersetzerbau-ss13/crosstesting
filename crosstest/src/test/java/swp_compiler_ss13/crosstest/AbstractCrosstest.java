@@ -1,5 +1,6 @@
 package swp_compiler_ss13.crosstest;
 
+import junit.extensions.PA;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.junit.*;
@@ -57,9 +58,51 @@ import static org.junit.Assert.assertTrue;
 public abstract class AbstractCrosstest {
 
 	private static Logger logger = Logger.getLogger(AbstractCrosstest.class);
-	Compiler compiler;
+	protected Compiler compiler;
+	private String progName;
 
-	static Collection<Object[]> moduleCombinations() {
+
+	@Test
+	public void test() throws InterruptedException, IOException, IntermediateCodeGeneratorException, BackendException {
+
+		this.progName = getProgName();
+
+		InputStream compilationResult = compiler.compile(getProg());
+		ReportLogImpl log = compiler.getErrlog();
+
+		String msg = "Expected ReportLog entries: " + getExpectedReportTypes()
+				+ ". Actual: " + log.getEntries().toString();
+
+		/* test for expected report log entries (errors and warnings) if program does not compile */
+		if (log.hasErrors()){
+			assertArrayEquals(msg, getExpectedReportTypes(), log.getErrors().toArray());
+			return;
+		}
+
+		/* test for expected report log entries (i.e. warnings), if program compiles */
+		assertArrayEquals(msg, getExpectedReportTypes(), log.getErrors().toArray());
+
+		/* assert that something was compiled*/
+		assertTrue(compilationResult != null);
+	}
+
+	protected abstract String getProgName();
+
+	private String getProg(){
+		return (String) ( (Object[]) PA.invokeMethod(ExampleProgs.class, this.progName + "()"))[0];
+	}
+	private String getOutput(){
+		return (String) ( (Object[]) PA.invokeMethod(ExampleProgs.class, this.progName + "()"))[1];
+	}
+	private Integer getExitCode(){
+		return (Integer) ( (Object[]) PA.invokeMethod(ExampleProgs.class, this.progName + "()"))[2];
+	}
+	private ReportType[] getExpectedReportTypes(){
+		return (ReportType[]) ( (Object[]) PA.invokeMethod(ExampleProgs.class, this.progName + "()"))[3];
+	}
+
+
+	protected static Collection<Object[]> moduleCombinations() {
 		Class[] lexerClasses = new Class[]{LexerJb.class, LexerImpl.class};
 		Class[] parserClasses = new Class[]{ParserJb.class, ParserImpl.class};
 		Class[] analyserClasses = new Class[]{SemanticAnalyserJb.class, SemanticAnalyser.class};
@@ -83,7 +126,7 @@ public abstract class AbstractCrosstest {
 		return classes;
 	}
 
-	void assumeAllModulesPreset() {
+	protected void assumeAllModulesPreset() {
 		Assume.assumeTrue("no lexer found, aborting", compiler.lexer != null);
 		Assume.assumeTrue("no parser found, aborting", compiler.parser != null);
 		Assume.assumeTrue("no semantic analyser found, aborting", compiler.analyser != null);
@@ -91,46 +134,4 @@ public abstract class AbstractCrosstest {
 		Assume.assumeTrue("no lexer found, aborting", compiler.backend != null);
 	}
 
-	protected InputStream testProgCompilation(Object[] prog) throws BackendException, IntermediateCodeGeneratorException,
-			IOException, InterruptedException {
-		InputStream compilationResult = compiler.compile((String) prog[0]);
-		ReportLogImpl log = compiler.getErrlog();
-
-		String msg = "Expected ReportLog entries: " + new ArrayList<ReportType>(Arrays.asList((ReportType[]) prog[3]))
-				+ ". Actual: " + log.getEntries().toString();
-
-		/* test for expected report log entries (errors and warnings) if program does not compile */
-		if (log.hasErrors()){
-			assertArrayEquals(msg, (Object[]) prog[3], log.getErrors().toArray());
-			return null;
-		}
-
-		/* test for expected report log entries (i.e. warnings), if program compiles */
-		assertArrayEquals(msg, (Object[]) prog[3], log.getErrors().toArray());
-
-		/* assert that something was compiled*/
-		assertTrue(compilationResult != null);
-
-		return compilationResult;
-	}
-
-//	void testProgCompilation(Object[] prog) throws BackendException, IntermediateCodeGeneratorException, IOException, InterruptedException {
-//		ReportLogImpl log = compiler.compile((String) prog[0]);
-//		String msg = null;
-//		if (log.hasErrors())
-//			msg = "ReportLog Error (first only): " + log.getErrors().get(0);
-//		assertFalse(msg, log.hasErrors());
-//		InputStream res = compiler.compile((String) prog[0]);
-//		assertTrue(res != null);
-//	}
-
-//	void testProgHasError(Object[] prog) throws BackendException, IntermediateCodeGeneratorException, IOException, InterruptedException {
-//		ReportLogImpl log = compiler.compileForError((String) prog[0]);
-//		assertTrue(log.hasErrors());
-//	}
-//
-//	void testProgHasWarnings(Object[] prog) throws BackendException, IntermediateCodeGeneratorException, IOException, InterruptedException {
-//		swp_compiler_ss13.crosstest.ReportLogImpl log = compiler.compileForError((String) prog[0]);
-//		assertTrue(log.hasWarnings());
-//	}
 }

@@ -1,12 +1,10 @@
 package swp_compiler_ss13.crosstest;
 
 import junit.extensions.PA;
-import org.apache.log4j.Level;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.junit.*;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import swp_compiler_ss13.common.backend.BackendException;
 import swp_compiler_ss13.common.ir.IntermediateCodeGeneratorException;
 import swp_compiler_ss13.common.report.ReportType;
@@ -22,13 +20,13 @@ import swp_compiler_ss13.javabite.lexer.LexerJb;
 import swp_compiler_ss13.javabite.parser.ParserJb;
 import swp_compiler_ss13.javabite.semantic.SemanticAnalyserJb;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * <p>
@@ -61,13 +59,16 @@ public abstract class AbstractCrosstest {
 	protected Compiler compiler;
 	private String progName;
 
+	private final static String BUILD_DIR = "build";
+
+
 
 	@Test
 	public void test() throws InterruptedException, IOException, IntermediateCodeGeneratorException, BackendException {
 
 		this.progName = getProgName();
 
-		InputStream compilationResult = compiler.compile(getProg());
+		Map<String, InputStream> compilationResult = compiler.compile(getProg());
 		ReportLogImpl log = compiler.getErrlog();
 
 		String msg = "Expected ReportLog entries: " + getExpectedReportTypes()
@@ -84,21 +85,85 @@ public abstract class AbstractCrosstest {
 
 		/* assert that something was compiled*/
 		assertTrue(compilationResult != null);
+
+		LLVMIRExecutor.ExecutionResult executionResult = executeTargetCode(compilationResult);
+		assertEquals("Exit code doesn't match: ", getExpectedExitCode(), executionResult.exitCode);
+		assertEquals("Output doesn't macht: ", getExpectedOutput(), executionResult.output);
 	}
 
 	protected abstract String getProgName();
 
+
 	private String getProg(){
 		return (String) ( (Object[]) PA.invokeMethod(ExampleProgs.class, this.progName + "()"))[0];
 	}
-	private String getOutput(){
-		return (String) ( (Object[]) PA.invokeMethod(ExampleProgs.class, this.progName + "()"))[1];
+
+
+	private Integer getExpectedExitCode(){
+		return (Integer) ( (Object[]) PA.invokeMethod(ExampleProgs.class, this.progName + "()"))[1];
 	}
-	private Integer getExitCode(){
-		return (Integer) ( (Object[]) PA.invokeMethod(ExampleProgs.class, this.progName + "()"))[2];
+
+
+	private String getExpectedOutput(){
+		return (String) ( (Object[]) PA.invokeMethod(ExampleProgs.class, this.progName + "()"))[2];
 	}
+
+
 	private ReportType[] getExpectedReportTypes(){
 		return (ReportType[]) ( (Object[]) PA.invokeMethod(ExampleProgs.class, this.progName + "()"))[3];
+	}
+
+
+	private LLVMIRExecutor.ExecutionResult executeTargetCode(Map<String, InputStream> compilationResult) throws InterruptedException, BackendException, IOException {
+
+		if (isLLVMBackend())
+			return executeLLVMIR(compilationResult);
+		else if (isJbBackend())
+			return executeJavabytecode(compilationResult);
+		else
+			return null;
+	}
+
+
+	private boolean isLLVMBackend() {
+		return compiler.backend.getClass() == LLVMBackend.class;
+	}
+
+
+	private boolean isJbBackend() {
+		return compiler.backend.getClass() == BackendJb.class;
+	}
+
+
+	private LLVMIRExecutor.ExecutionResult executeLLVMIR(Map<String, InputStream> compilationResult) throws InterruptedException, BackendException, IOException {
+		try {
+			LLVMIRExecutor.tryToStartLLI();
+		}
+		catch (IOException e) {
+			Assume.assumeNoException("No LLVM Installation found", e);
+		}
+		return LLVMIRExecutor.runIR(compilationResult.get(compilationResult.keySet().iterator().next()));
+	}
+
+
+	private LLVMIRExecutor.ExecutionResult executeJavabytecode(Map<String, InputStream> compilationResult) throws IOException {
+		File mainClassFile = null;
+		for (Map.Entry<String, InputStream> e : compilationResult.entrySet()) {
+			File outFile = new File(BUILD_DIR, e.getKey());
+			if (!outFile.getParentFile().exists() && !outFile.getParentFile().mkdirs()) {
+				logger.error("Could not generate output directories: " + outFile.getAbsolutePath());
+				return null;
+			}
+			if (mainClassFile == null)
+				mainClassFile = outFile;
+
+			FileOutputStream fos = new FileOutputStream(outFile);
+			IOUtils.copy(e.getValue(), fos);
+			fos.close();
+		}
+
+		JavabyteExecutor jbExecutor = new JavabyteExecutor(mainClassFile);
+		return new LLVMIRExecutor.ExecutionResult(jbExecutor.getProcessOutput(), jbExecutor.getReturnValue(), null);
 	}
 
 

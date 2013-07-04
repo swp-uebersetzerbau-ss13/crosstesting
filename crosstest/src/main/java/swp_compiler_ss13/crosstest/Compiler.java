@@ -37,7 +37,7 @@ public class Compiler {
 		errlog = new ReportLogImpl();
 	}
 
-	protected InputStream compile(String prog) throws BackendException,
+	protected Map<String, InputStream> compile(String prog) throws BackendException,
 			IntermediateCodeGeneratorException, IOException, InterruptedException {
 		errlog = new ReportLogImpl();
 		lexer.setSourceStream(new ByteArrayInputStream(prog.getBytes("UTF-8")));
@@ -50,7 +50,7 @@ public class Compiler {
 		if (errlog.hasErrors()) return null;
 		List<Quadruple> tac = irgen.generateIntermediateCode(ast2);
 		Map<String, InputStream> targets = backend.generateTargetCode("prog", tac);
-		return targets.get(targets.keySet().iterator().next());
+		return targets;
 	}
 
 	public ReportLogImpl getErrlog() {

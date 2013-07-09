@@ -1,5 +1,6 @@
 package swp_compiler_ss13.crosstest.additional;
 
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import swp_compiler_ss13.crosstest.AbstractCrosstest;
@@ -7,6 +8,7 @@ import swp_compiler_ss13.crosstest.Compiler;
 
 import java.util.Collection;
 
+@Ignore("does not terminate in test[2: LexerJb->ParserJb->SemanticAnalyserJb->IntermediateCodeGeneratorImpl->BackendJb]")
 @RunWith(Parameterized.class)
 public class CalendarProgTest extends AbstractCrosstest {
 

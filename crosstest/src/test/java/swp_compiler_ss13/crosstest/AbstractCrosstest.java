@@ -21,10 +21,7 @@ import swp_compiler_ss13.javabite.lexer.LexerJb;
 import swp_compiler_ss13.javabite.parser.ParserJb;
 import swp_compiler_ss13.javabite.semantic.SemanticAnalyserJb;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -75,25 +72,25 @@ public abstract class AbstractCrosstest {
 		ReportLogImpl log = compiler.getErrlog();
 
 
-		/* test for expected report log entries from parser if program does not compile */
+		/* test for expected report log errors from parser if program does not compile */
 		if (compiler.errlogAfterParser.hasErrors()){
 			String msg = "Error in Parser: Expected ReportLog entries: " + Arrays.deepToString(getExpectedReportTypes())
-					+ ". Actual: " + log.getEntries().toString();
+					+ ". Actual: " + log.getErrors().toString();
 			assertArrayEquals(msg, getExpectedReportTypes(), compiler.getErrlogAfterParser().getEntries().toArray());
 			return;
 		}
 
-		/* test for expected report log entries from analyzer if program does not compile */
+		/* test for expected report log errors from analyzer if program does not compile */
 		if (compiler.errlogAfterAnalyzer.hasErrors()){
 			String msg = "Error in Analyzer: Expected ReportLog entries: " + Arrays.deepToString(getExpectedReportTypes())
-					+ ". Actual: " + log.getEntries().toString();
+					+ ". Actual: " + log.getErrors().toString();
 			assertArrayEquals(msg, getExpectedReportTypes(), compiler.getErrlogAfterAnalyzer().getEntries().toArray());
 			return;
 		}
 
-		/* test for expected report log entries (i.e. warnings), if program compiles */
-		String msg = "Unexpected warnings after successfull compilation.\n Expected ReportLog entries: " + Arrays.deepToString(getExpectedReportTypes())
-				+ ". Actual: " + log.getEntries().toString();
+		/* test for expected report log errors if program compiles */
+		String msg = "Unexpected errors after successfull compilation.\n Expected ReportLog entries: " + Arrays.deepToString(getExpectedReportTypes())
+				+ ". Actual: " + log.getErrors().toString();
 		assertArrayEquals(msg, getExpectedReportTypes(), log.getErrors().toArray());
 
 		LLVMIRExecutor.ExecutionResult executionResult = executeTargetCode(compilationResult);

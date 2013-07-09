@@ -8,7 +8,6 @@ import swp_compiler_ss13.crosstest.Compiler;
 
 import java.util.Collection;
 
-//@Ignore("does not terminate in test[2: LexerJb->ParserJb->SemanticAnalyserJb->IntermediateCodeGeneratorImpl->BackendJb]")
 @RunWith(Parameterized.class)
 public class CalendarProgTest extends AbstractCrosstest {
 

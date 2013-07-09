@@ -4,7 +4,7 @@ ant.importBuild 'javabite/build.xml'
 defaultTasks ':crosstest:test'
 project(':crosstest') {
 	apply plugin: 'java'
-	repositories { 
+	repositories {
 		mavenCentral()
 	}
 
@@ -33,7 +33,7 @@ project(':common'){
 			java { srcDir 'interfaces/test' }
 		}
 	}
-	repositories { 
+	repositories {
 		mavenCentral()
 	}
 
@@ -59,7 +59,7 @@ def fucJarFiles() {
 		'./fuc/code/dist/FUC-Backend.jar','./fuc/code/dist/lib/log4j-1.2.17.jar')
 }
 def javabiteJarFiles() {
-	files('./javabite/bin/javabite-semantic-0.1.jar','./javabite/bin/javabite-common-0.1.jar',
-		'./javabite/bin/javabite-parser-0.1.jar','./javabite/bin/javabite-backend-0.1.jar',
-		'./javabite/bin/javabite-lexer-0.1.jar','./javabite/bin/javabite-code-gen-0.1.jar',)
+	files('./javabite/bin/javabite-semantic-0.2.jar','./javabite/bin/javabite-common-0.2.jar',
+		'./javabite/bin/javabite-parser-0.2.jar','./javabite/bin/javabite-backend-0.2.jar',
+		'./javabite/bin/javabite-lexer-0.2.jar','./javabite/bin/javabite-code-gen-0.2.jar',)
 }

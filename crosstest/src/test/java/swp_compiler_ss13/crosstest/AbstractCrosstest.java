@@ -173,10 +173,13 @@ public abstract class AbstractCrosstest {
 		JavabyteExecutor jbExecutor = new JavabyteExecutor(mainClassFile);
 
 		String output;
-		if (getExpectedOutput().equals(""))
+		String jbExecutorOutput = jbExecutor.getProcessOutput();
+		if (jbExecutorOutput.equals(""))
 			output = "";
+		else if (jbExecutorOutput.endsWith("\n"))
+			output = jbExecutorOutput;
 		else
-			output = jbExecutor.getProcessOutput() + "\n";
+			output = jbExecutorOutput + "\n";
 
 		return new LLVMIRExecutor.ExecutionResult(output, jbExecutor.getReturnValue(), null);
 	}

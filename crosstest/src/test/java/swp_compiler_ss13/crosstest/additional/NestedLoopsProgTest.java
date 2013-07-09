@@ -9,7 +9,6 @@ import swp_compiler_ss13.crosstest.Compiler;
 import java.util.Collection;
 
 @RunWith(Parameterized.class)
-//@Ignore("doesn't terminate in LexerJb->ParserImpl->SemanticAnalyserJb->IntermediateCodeGeneratorImpl->BackendJb")
 public class NestedLoopsProgTest extends AbstractCrosstest {
 
 	public NestedLoopsProgTest(String testname, Class lexerToUse, Class parserToUse, Class analyserToUse, Class irgenToUse,

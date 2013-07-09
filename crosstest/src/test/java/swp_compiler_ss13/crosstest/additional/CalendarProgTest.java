@@ -8,13 +8,14 @@ import swp_compiler_ss13.crosstest.Compiler;
 
 import java.util.Collection;
 
-@Ignore("does not terminate in test[2: LexerJb->ParserJb->SemanticAnalyserJb->IntermediateCodeGeneratorImpl->BackendJb]")
+//@Ignore("does not terminate in test[2: LexerJb->ParserJb->SemanticAnalyserJb->IntermediateCodeGeneratorImpl->BackendJb]")
 @RunWith(Parameterized.class)
 public class CalendarProgTest extends AbstractCrosstest {
 
 	public CalendarProgTest(String testname, Class lexerToUse, Class parserToUse, Class analyserToUse, Class irgenToUse,
 							Class backToUse) {
 		this.compiler = new Compiler(lexerToUse, parserToUse, analyserToUse, irgenToUse, backToUse);
+		this.testname = testname;
 		assumeAllModulesPreset();
 	}
 

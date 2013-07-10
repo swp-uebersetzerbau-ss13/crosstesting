@@ -22,6 +22,10 @@ project(':crosstest') {
 		compile fucJarFiles()
 		compile javabiteJarFiles()
 	}
+	
+	test {
+		systemProperties 'org.slf4j.simpleLogger.defaultLogLevel': 'error'
+	}
 }
 project(':common'){
 	apply plugin: 'java'

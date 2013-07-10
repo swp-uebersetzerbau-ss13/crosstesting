@@ -5,7 +5,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.junit.*;
-import org.junit.Test;
 import swp_compiler_ss13.common.backend.BackendException;
 import swp_compiler_ss13.common.ir.IntermediateCodeGeneratorException;
 import swp_compiler_ss13.common.report.ReportType;
@@ -107,29 +106,29 @@ public abstract class AbstractCrosstest {
 
 		LLVMIRExecutor.ExecutionResult executionResult = executeTargetCode(compilationResult);
 		assertEquals("Exit code doesn't match: ", getExpectedExitCode(), executionResult.exitCode);
-		assertEquals("Output doesn't macht: ", getExpectedOutput(), executionResult.output);
+		assertEquals("Output doesn't match: ", getExpectedOutput(), executionResult.output);
 	}
 
 
 	protected abstract String getProgName();
 
 
-	private String getProg(){
+	protected String getProg(){
 		return (String) ( (Object[]) PA.invokeMethod(ExampleProgs.class, this.progName + "()"))[0];
 	}
 
 
-	private Integer getExpectedExitCode(){
+	protected Integer getExpectedExitCode(){
 		return (Integer) ( (Object[]) PA.invokeMethod(ExampleProgs.class, this.progName + "()"))[1];
 	}
 
 
-	private String getExpectedOutput(){
+	protected String getExpectedOutput(){
 		return (String) ( (Object[]) PA.invokeMethod(ExampleProgs.class, this.progName + "()"))[2];
 	}
 
 
-	private ReportType[] getExpectedReportTypes(){
+	protected ReportType[] getExpectedReportTypes(){
 		return (ReportType[]) ( (Object[]) PA.invokeMethod(ExampleProgs.class, this.progName + "()"))[3];
 	}
 
@@ -197,6 +196,7 @@ public abstract class AbstractCrosstest {
 	}
 
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected static Collection<Object[]> moduleCombinations() {
 		Class[] lexerClasses = new Class[]{LexerJb.class, LexerImpl.class};
 		Class[] parserClasses = new Class[]{ParserJb.class, ParserImpl.class};

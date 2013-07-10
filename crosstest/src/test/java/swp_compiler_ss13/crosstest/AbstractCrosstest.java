@@ -64,17 +64,6 @@ public abstract class AbstractCrosstest {
 	@Test
 	public void test() throws InterruptedException, IOException, IntermediateCodeGeneratorException, BackendException, CloneNotSupportedException {
 
-		if (testname.equals("LexerJb->ParserJb->SemanticAnalyserJb->IntermediateCodeGeneratorImpl->BackendJb") ||
-				testname.equals("LexerJb->ParserJb->SemanticAnalyserJb->IntermediateCodeGeneratorImpl->LLVMBackend") ||
-				testname.equals("LexerJb->ParserImpl->SemanticAnalyserJb->IntermediateCodeGeneratorImpl->BackendJb") ||
-				testname.equals("LexerJb->ParserImpl->SemanticAnalyserJb->IntermediateCodeGeneratorImpl->LLVMBackend") ||
-				testname.equals("LexerImpl->ParserJb->SemanticAnalyserJb->IntermediateCodeGeneratorImpl->BackendJb") ||
-				testname.equals("LexerImpl->ParserJb->SemanticAnalyserJb->IntermediateCodeGeneratorImpl->LLVMBackend") ||
-				testname.equals("LexerImpl->ParserImpl->SemanticAnalyserJb->IntermediateCodeGeneratorImpl->BackendJb") ||
-				testname.equals("LexerImpl->ParserImpl->SemanticAnalyserJb->IntermediateCodeGeneratorImpl->LLVMBackend")
-				)
-			Assume.assumeTrue("non terminating combination", false);
-
 		Logger.getRootLogger().setLevel(Level.ERROR);
 
 		this.progName = getProgName();

@@ -1,6 +1,5 @@
 # Crosstesting [![Build Status](https://travis-ci.org/swp-uebersetzerbau-ss13/crosstesting.png?branch=master)](https://travis-ci.org/swp-uebersetzerbau-ss13/crosstesting)
 
-
 Crosstesting the [Javabite Compiler](https://github.com/swp-uebersetzerbau-ss13/javabite) 
 and [FU Compiler](https://github.com/swp-uebersetzerbau-ss13/fuc).
 
@@ -28,7 +27,6 @@ Nicely formatted results of the crosstests can be found
 This results page is updated manually, it therefore does not necessarily reflect the current stage of the repository.
 
 Always up-to-date results can be found on the [Travis CI Project Page](https://github.com/swp-uebersetzerbau-ss13/crosstesting).
-
 
 ##### Footnotes:
 [1] If gradle is not installed, `./gradlew <task>` can be used instead

@@ -1,6 +1,5 @@
 package swp_compiler_ss13.crosstest;
 
-import junit.extensions.PA;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -9,6 +8,7 @@ import swp_compiler_ss13.common.backend.BackendException;
 import swp_compiler_ss13.common.ir.IntermediateCodeGeneratorException;
 import swp_compiler_ss13.common.report.ReportType;
 import swp_compiler_ss13.common.test.ExampleProgs;
+import swp_compiler_ss13.common.test.Program;
 import swp_compiler_ss13.fuc.backend.LLVMBackend;
 import swp_compiler_ss13.fuc.ir.IntermediateCodeGeneratorImpl;
 import swp_compiler_ss13.fuc.lexer.LexerImpl;
@@ -54,22 +54,21 @@ public abstract class AbstractCrosstest {
 
 	private static Logger logger = Logger.getLogger(AbstractCrosstest.class);
 	protected Compiler compiler;
-	private String progName;
+	protected Program program;
 
-	private final static String BUILD_DIR = "build";
+	private final static String BUILD_DIR;
 
+	static {
+		BUILD_DIR = "build";
+		Logger.getRootLogger().setLevel(Level.ERROR);
+	}
 
 
 	@Test
 	public void test() throws InterruptedException, IOException, IntermediateCodeGeneratorException, BackendException, CloneNotSupportedException {
 
-		Logger.getRootLogger().setLevel(Level.ERROR);
-
-		this.progName = getProgName();
-
-		Map<String, InputStream> compilationResult = compiler.compile(getProg());
+		Map<String, InputStream> compilationResult = compiler.compile(getProgramCode());
 		ReportLogImpl log = compiler.getErrlog();
-
 
 		/* test for expected report log errors from parser if program does not compile */
 		if (compiler.errlogAfterParser.hasErrors()){
@@ -97,27 +96,23 @@ public abstract class AbstractCrosstest {
 		assertEquals("Output doesn't match: ", getExpectedOutput(), executionResult.output);
 	}
 
-
-	protected abstract String getProgName();
-
-
-	protected String getProg(){
-		return (String) ( (Object[]) PA.invokeMethod(ExampleProgs.class, this.progName + "()"))[0];
+	protected String getProgramCode(){
+		return program.programCode;
 	}
 
 
 	protected Integer getExpectedExitCode(){
-		return (Integer) ( (Object[]) PA.invokeMethod(ExampleProgs.class, this.progName + "()"))[1];
+		return program.expectedExitcode;
 	}
 
 
 	protected String getExpectedOutput(){
-		return (String) ( (Object[]) PA.invokeMethod(ExampleProgs.class, this.progName + "()"))[2];
+		return program.expectedOutput;
 	}
 
 
 	protected ReportType[] getExpectedReportTypes(){
-		return (ReportType[]) ( (Object[]) PA.invokeMethod(ExampleProgs.class, this.progName + "()"))[3];
+		return program.expecteReportTypes;
 	}
 
 

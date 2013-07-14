@@ -2,6 +2,7 @@ package swp_compiler_ss13.crosstest.m3;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import swp_compiler_ss13.common.test.ExampleProgs;
 import swp_compiler_ss13.crosstest.AbstractCrosstest;
 import swp_compiler_ss13.crosstest.Compiler;
 import swp_compiler_ss13.fuc.backend.LLVMBackend;
@@ -12,12 +13,13 @@ import java.util.Collection;
 @RunWith(Parameterized.class)
 public class NewtonProgTest extends AbstractCrosstest {
 
-	private Class backendToUse;
+	private Class backendUsed;
 
 	public NewtonProgTest(String testname, Class lexerToUse, Class parserToUse, Class analyserToUse, Class irgenToUse,
 						  Class backendToUse) {
 		this.compiler = new Compiler(lexerToUse, parserToUse, analyserToUse, irgenToUse, backendToUse);
-		this.backendToUse = backendToUse;
+		this.program = ExampleProgs.newtonProg();
+		this.backendUsed = backendToUse;
 		assumeAllModulesPreset();
 	}
 
@@ -27,16 +29,11 @@ public class NewtonProgTest extends AbstractCrosstest {
 	}
 
 	@Override
-	protected String getProgName() {
-		return "newtonProg";
-	}
-
-	@Override
 	protected String getExpectedOutput() {
 		/* allow different floating point precision */
-		if (backendToUse == BackendJb.class) {
+		if (backendUsed == BackendJb.class) {
 			return "i hate floating point numbers1.4142156862745097\n";
-		} else if (backendToUse == LLVMBackend.class) {
+		} else if (backendUsed == LLVMBackend.class) {
 			return "i hate floating point numbers1.414216e+00\n";
 		} else {
 			return super.getExpectedOutput();

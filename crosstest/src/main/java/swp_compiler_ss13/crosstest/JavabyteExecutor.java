@@ -7,12 +7,19 @@ import java.io.StringWriter;
 
 import org.apache.commons.io.IOUtils;
 
+/**
+ * Class for executing javabite code.
+ */
 public class JavabyteExecutor {
 	private final static boolean NO_VERIFY_NEEDED = false;
 	private final static String NO_VERIFY = "-noverify";
 
 	Process p;
 
+	/**
+	 * Initialize a new JavabyteExecutor objekt.
+	 * @param classFile the classfile or directory of classfiles with javabytecode
+	 */
 	public JavabyteExecutor(File classFile) {
 		if (classFile == null)
 			throw new NullPointerException();
@@ -51,10 +58,18 @@ public class JavabyteExecutor {
 		}
 	}
 
+	/**
+	 * Get the return value (exit code) of the execution.
+	 * @return the return value (exit code) of the execution
+	 */
 	public Integer getReturnValue() {
 		return p.exitValue();
 	}
 
+	/**
+	 * Get the output (print statemnt) of the execution.
+	 * @return the output (print statemnt) of the execution
+	 */
 	public String getProcessOutput() {
 		StringWriter writer = new StringWriter();
 		try {
@@ -65,7 +80,4 @@ public class JavabyteExecutor {
 		return writer.toString();
 	}
 
-	public InputStream getInputstream() {
-		return p.getInputStream();
-	}
 }

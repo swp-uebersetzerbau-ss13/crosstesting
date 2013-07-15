@@ -14,11 +14,15 @@ import swp_compiler_ss13.common.semanticAnalysis.SemanticAnalyser;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 
+/**
+ * Compiler
+ */
 public class Compiler {
 
 	private static Logger logger = Logger.getLogger(Compiler.class);
@@ -33,17 +37,34 @@ public class Compiler {
 	protected ReportLogImpl errlogAfterParser;
 	protected ReportLogImpl errlogAfterAnalyzer;
 
-	public Compiler(Class lexerToUse, Class parserToUse, Class analyserToUse, Class irgenToUse, Class backToUse) {
+	/**
+	 * Initializes a compiler with the respective modules from either javabite or fuc.
+	 * @param lexerToUse The lexer to use
+	 * @param parserToUse the parser to use
+	 * @param analyserToUse the semantic analyzer to use
+	 * @param irgenToUse the intermediate code generator to use
+	 * @param backendToUse the backend to use
+	 */
+	public Compiler(Class lexerToUse, Class parserToUse, Class analyserToUse, Class irgenToUse, Class backendToUse) {
 		lexer = (Lexer) getModule(Lexer.class, lexerToUse);
 		parser = (Parser) getModule(Parser.class, parserToUse);
 		analyser = (swp_compiler_ss13.common.semanticAnalysis.SemanticAnalyser) getModule(swp_compiler_ss13.common.semanticAnalysis.SemanticAnalyser.class, analyserToUse);
 		irgen = (IntermediateCodeGenerator) getModule(IntermediateCodeGenerator.class, irgenToUse);
-		backend = (Backend) getModule(Backend.class, backToUse);
+		backend = (Backend) getModule(Backend.class, backendToUse);
 		errlog = new ReportLogImpl();
 	}
 
-	protected Map<String, InputStream> compile(String prog) throws BackendException,
-			IntermediateCodeGeneratorException, IOException, InterruptedException, CloneNotSupportedException {
+
+	/**
+	 * Compiles a programme.
+	 * @param prog the programme to compile
+	 * @return the compilation results (target language code)
+	 * @throws UnsupportedEncodingException if no utf-8 encoding
+	 * @throws CloneNotSupportedException if the cloning of the ReportLog fails
+	 * @throws IntermediateCodeGeneratorException if an error occurs in the Intermediate Code Generator
+	 * @throws BackendException if an error occurs in the Backend
+	 */
+	public Map<String, InputStream> compile(String prog) throws UnsupportedEncodingException, CloneNotSupportedException, IntermediateCodeGeneratorException, BackendException {
 		errlog = new ReportLogImpl();
 
 		lexer.setSourceStream(new ByteArrayInputStream(prog.getBytes("UTF-8")));
@@ -68,15 +89,27 @@ public class Compiler {
 		return targets;
 	}
 
-	public ReportLogImpl getErrlog() {
+	/**
+	 * Get the ReportLog
+	 * @return the ReportLog
+	 */
+	public ReportLogImpl getReportLog() {
 		return errlog;
 	}
 
-	public ReportLogImpl getErrlogAfterParser() {
+	/**
+	 * Get a clone of the ReportLog representing the state of the ReportLog after the parser.
+	 * @return the ReportLog after the parser
+	 */
+	public ReportLogImpl getReportLogAfterParser() {
 		return errlogAfterParser;
 	}
 
-	public ReportLogImpl getErrlogAfterAnalyzer() {
+	/**
+	 * Get a clone of the ReportLog representing the state of the ReportLog after the semantic analyzer.
+	 * @return the ReportLog after the semantic analyzer
+	 */
+	public ReportLogImpl getReportLogAfterAnalyzer() {
 		return errlogAfterAnalyzer;
 	}
 
@@ -91,10 +124,6 @@ public class Compiler {
 			}
 		}
 		return null;
-	}
-
-	void resetErrlog(){
-		errlog = new ReportLogImpl();
 	}
 
 }

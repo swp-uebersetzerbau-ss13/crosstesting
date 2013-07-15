@@ -29,20 +29,23 @@ import static org.junit.Assert.*;
  * <p>
  * The cross tests test for the interchangeability of the fuc and the javabite
  * modules. All 32 possible combinations of the lexer, parser, semantic analyser
- * and backend are tests.
+ * and backend are tested.
  * </p>
  * <p>
- * For the tests to work, the javabite moduls have to be placed into the
- * fuc/code/dist <code>fuc/code/dist/</code> directory as jar-files. The
- * javabite jars can be obtained be running <code>ant buildCompiler</code> in
- * the javabite repository.
+ * For the tests to work, the javabite moduls and the fuc modules have to be
+ * compiled as jar files and placed into the <code>javabite/bin</code> and
+ * <code>fuc/code/dist/</code> respectively. fuc/code/dist
+ * <code>fuc/code/dist/</code> directory as jar-files. The javabite jars can be
+ * obtained be running <code>ant buildCompiler</code> in the javabite
+ * repository.
  * </p>
  * <p>
- * The cross test are compilation tests, i.e. the test if the example program
- * compiles through all stages of the compiler, producing some kind of target
- * language code in the end. These tests only test if the compiler runs through
- * without producing errors, not for the correctness of the resulting target
- * language code.
+ * All cross test are runtime tests. The example programmes are compiled through
+ * all compiler stages. The tests assert, that the the compilation either
+ * produces expected errors or compiles through, producing some kind of target
+ * code. The resulting target code is then executed and the result of the
+ * execution is checked against the expected output (`print` statements) and
+ * exit code (`return` statement).
  * </p>
  * <p>
  * All example progs can be found in {@link ExampleProgs}.
@@ -68,13 +71,13 @@ public abstract class AbstractCrosstest {
 	public void test() throws InterruptedException, IOException, IntermediateCodeGeneratorException, BackendException, CloneNotSupportedException {
 
 		Map<String, InputStream> compilationResult = compiler.compile(getProgramCode());
-		ReportLogImpl log = compiler.getErrlog();
+		ReportLogImpl log = compiler.getReportLog();
 
 		/* test for expected report log errors from parser if program does not compile */
 		if (compiler.errlogAfterParser.hasErrors()){
 			String msg = "Error in Parser: Expected ReportLog entries: " + Arrays.deepToString(getExpectedReportTypes())
 					+ ". Actual: " + log.getErrors().toString();
-			assertArrayEquals(msg, getExpectedReportTypes(), compiler.getErrlogAfterParser().getEntries().toArray());
+			assertArrayEquals(msg, getExpectedReportTypes(), compiler.getReportLogAfterParser().getErrors().toArray());
 			return;
 		}
 
@@ -82,7 +85,7 @@ public abstract class AbstractCrosstest {
 		if (compiler.errlogAfterAnalyzer.hasErrors()){
 			String msg = "Error in Analyzer: Expected ReportLog entries: " + Arrays.deepToString(getExpectedReportTypes())
 					+ ". Actual: " + log.getErrors().toString();
-			assertArrayEquals(msg, getExpectedReportTypes(), compiler.getErrlogAfterAnalyzer().getEntries().toArray());
+			assertArrayEquals(msg, getExpectedReportTypes(), compiler.getReportLogAfterAnalyzer().getErrors().toArray());
 			return;
 		}
 

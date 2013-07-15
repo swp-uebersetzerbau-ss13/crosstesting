@@ -13,12 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Class for executing LLVM IR code.
+ */
 public class LLVMIRExecutor {
 
-	/**
-	 * The logger used to output information.
-	 *
-	 */
 	private static Logger logger = Logger.getLogger(LLVMIRExecutor.class);
 
 	/**

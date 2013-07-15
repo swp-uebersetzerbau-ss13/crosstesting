@@ -16,6 +16,11 @@ The example programs comprise of the examples from [`common/examples`](https://g
 The main test logic is centralized in [AbstractCrosstest.java](crosstest/src/test/java/swp_compiler_ss13/crosstest/AbstractCrosstest.java),
 while all the example programs are implemented as test classes inheriting from [AbstractCrosstest.java](crosstest/src/test/java/swp_compiler_ss13/crosstest/AbstractCrosstest.java).
 
+Every commit pushed to the remote master branch is tested with [Travis CI](https://github.com/travis-ci/travis-ci). 
+Before running the tests, LLVM is installed, allowing the execution of the the runtime tests.
+The current build status of the master branch is displayed at the top. 
+The testing can be seen in action an the Travis CI [status page for crosstesting](https://travis-ci.org/swp-uebersetzerbau-ss13/crosstesting).
+
 # Instructions
 
 ## Cloning the project
